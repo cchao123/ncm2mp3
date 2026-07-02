@@ -1,0 +1,16 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+
+# Local tool/config state
+.claude/
+
+# Input and generated audio files
+target/
+output/
+*.ncm
+*.mp3
+*.flac
+*.wav
+*.m4a
+*.aac
