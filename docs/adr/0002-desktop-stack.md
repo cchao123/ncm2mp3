@@ -37,6 +37,16 @@
 - **路径与文件管理器集成**：「打开目录」与「定位到文件」在两个平台上是不同命令，且语义需区分（见 [glossary](../glossary.md) 中「Reveal」条目）。
 - **二进制依赖分发**：若最终需要内置 ffmpeg，需为 macOS arm64、macOS x64、Windows x64 三个目标各备一份。这正是 ADR-0003 试图消除的负担。
 
+- **`productName` 必须是 ASCII**（实测踩坑，2026-07-26）：
+  该字段会进入安装包文件名、安装目录以及 WiX 生成的 `main.wxs`。用中文会让
+  WiX 的 `light.exe` 在打包 MSI 时失败，**且不给出任何有用的错误信息**——
+  Rust 编译全过、`.exe` 已产出，只在最后一步挂掉，极易误判为编译问题。
+  界面上的中文名由 `app.windows[].title` 提供，与此字段无关，因此不冲突。
+
+- **无法从 macOS 交叉编译到 Windows**：Tauri 官方不支持。Windows 版本必须在
+  Windows 上原生构建，本项目通过 GitHub Actions 的 windows runner 完成
+  （见 `.github/workflows/build.yml`）。
+
 ## 后果
 
 - 产物体积与启动速度显著优于 Electron，符合「工具型小应用」的定位
