@@ -14,6 +14,12 @@ on:
 
 jobs:
   build:
+    # GITHUB_TOKEN 默认是只读的（GitHub 2023 年起的默认策略），
+    # 创建 Release 需要 contents: write。缺了它构建会全部成功、
+    # 只在最后一步报 "Resource not accessible by integration"。
+    permissions:
+      contents: write
+
     strategy:
       fail-fast: false
       matrix:
@@ -66,7 +72,10 @@ jobs:
           releaseDraft: true
           prerelease: false
 
+      # if: always() —— 即使上一步创建 Release 失败，也要把已经构建出来的
+      # 安装包捞出来。否则一个权限问题就会让整轮构建颗粒无收。
       - name: 上传安装包
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.label }}
