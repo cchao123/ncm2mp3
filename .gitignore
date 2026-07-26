@@ -5,8 +5,16 @@ __pycache__/
 # Local tool/config state
 .claude/
 
-# Input and generated audio files
+# Node
+node_modules/
+dist/
+.vite/
+
+# Rust 构建产物。不带前导斜杠，因此同时覆盖
+# app/src-tauri/target 与 spike/target
 target/
+
+# Input and generated audio files
 output/
 *.ncm
 *.mp3
