@@ -1,0 +1,1 @@
+{"default":{"identifier":"default","description":"主窗口权限：打开输出目录、在文件管理器中定位文件","local":true,"windows":["main"],"permissions":["core:default","opener:default","opener:allow-open-path","opener:allow-reveal-item-in-dir"]}}

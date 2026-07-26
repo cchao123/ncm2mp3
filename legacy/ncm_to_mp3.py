@@ -117,8 +117,10 @@ class NCMDecryptor:
                 self.metadata = json.loads(json_str)
                 metadata = self.metadata
 
-            # 9. 跳过 CRC32 (4字节) 和 gap (5字节)
-            f.seek(5, 1)
+            # 9. 跳过 CRC32 (4字节) 和 gap (5字节)，共 9 字节
+            # 注意：此处必须是 9。曾误写为 5，导致后续 image_size 读到 gap 中的
+            # 全零字节而恒为 0，音频起始位置整体前移，解出的数据全是乱码。
+            f.seek(9, 1)
 
             # 10. 读取图片大小和图片数据
             image_size_data = f.read(4)
@@ -156,7 +158,7 @@ class NCMDecryptor:
             return metadata['format']
 
         # 通过文件头检测
-        if audio_data[:3] == b'IDV' or audio_data[:2] == b'\xff\xfb':
+        if audio_data[:3] == b'ID3' or audio_data[:2] == b'\xff\xfb':
             return 'mp3'
         elif audio_data[:4] == b'fLaC':
             return 'flac'
@@ -168,6 +170,8 @@ class NCMDecryptor:
 
 def convert_to_mp3(input_file: str, output_file: str, bitrate: str = '192k') -> bool:
     """使用 ffmpeg 将音频转换为 MP3"""
+    import subprocess  # 必须在函数顶部导入：曾放在下方，使 subprocess 成为局部变量，
+                       # 导致本函数第一次引用它就抛 UnboundLocalError，FLAC 转码路径从未跑通
     try:
         # 检查 ffmpeg 是否可用
         result = subprocess.run(['ffmpeg', '-version'],

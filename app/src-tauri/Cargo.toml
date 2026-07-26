@@ -1,0 +1,56 @@
+[package]
+name = "ncm-desktop"
+version = "0.1.0"
+edition = "2021"
+description = "网易云音乐下载器"
+
+[lib]
+name = "ncm_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+thiserror = "2"
+
+# rustls 而非 native-tls：后者走 macOS Security.framework，跨平台分发更麻烦
+reqwest = { version = "0.12", default-features = false, features = [
+    "json", "rustls-tls", "stream",
+] }
+tokio = { version = "1", features = ["full"] }
+futures-util = "0.3"
+
+# 请求加密（weapi）与 NCM 容器解密
+aes = "0.8"
+cbc = { version = "0.1", features = ["alloc"] }
+ecb = { version = "0.1", features = ["alloc"] }
+base64 = "0.22"
+num-bigint = "0.4"
+hex = "0.4"
+md-5 = "0.10"
+rand = "0.8"
+
+# 曲库与任务队列（ADR-0009）。bundled 直接编译 SQLite 源码，
+# 免去两个平台各自的运行时依赖，符合 ADR-0002 的分发目标。
+rusqlite = { version = "0.32", features = ["bundled"] }
+
+# 凭据存系统钥匙串（ADR-0004）：macOS Keychain / Windows Credential Manager
+keyring = { version = "3", features = [
+    "apple-native", "windows-native", "sync-secret-service",
+] }
+
+# ID3 标签写入（ADR-0003：没有它，产物导入音乐库全是「未知专辑」）
+id3 = "1"
+
+qrcode = { version = "0.14", default-features = false, features = ["svg"] }
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
