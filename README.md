@@ -51,8 +51,7 @@ app/          Tauri + React 桌面应用
   src/          前端（登录 / 搜索 / 下载队列 / 曲库）
   src-tauri/    Rust 后端（请求加密、下载器、SQLite、钥匙串）
 docs/         设计文档：9 份 ADR 与术语表
-legacy/       早期的 Python 命令行脚本，已降级为参考实现
-spike/        可行性验证代码
+legacy/       早期的 Python 命令行脚本，保留作为 NCM 解密的回归基准
 ```
 
 ## 设计文档
